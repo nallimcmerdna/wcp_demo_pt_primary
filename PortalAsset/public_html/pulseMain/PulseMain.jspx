@@ -26,7 +26,7 @@
                 <wcdc:portalToolbar id="ptbdc"/>
             </af:panelGroupLayout>
             
-            <!-- Two dormant Bootstrap modal dialog boxes laying at the top of page for use by any page content that wishes to take advangate of them -->  
+            <!-- Two Bootstrap modal dialog boxes laying at the top of page for use by any page content that wishes to take advangate of them -->  
             <div id="modal-lg" class="modal fade" tabindex="1" role="dialog" aria-labelledby="myLargeModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -200,7 +200,7 @@
                                scope="session"/>
                          
                         <c:forEach var="menu" varStatus="vs" items="${navNodes}">
-                            <c:if test="${(menu.title != 'Top') and (menu.title != '~~') and ((menu.title != 'MyCommunities') or ((menu.title == 'MyCommunities') and (not empty menu.children))) }">
+                            <c:if test="${(menu.title != 'Top') and (menu.title != 'Services') and ((menu.title != 'MyCommunities') or ((menu.title == 'MyCommunities') and (not empty menu.children))) }">
                                 <c:choose>
                                     <c:when test="${empty menu.children}">
                                         <li class="parentnode">
@@ -289,7 +289,7 @@
                         <li class="parentnode iconMenu">
                             <ul class="nav nav-pills nav-justified">
                                 <li>
-                                    <a href="#" class="primaryNavIcons">
+                                    <a href="/webcenter/portal/PulseHome/pages_top/collaborate" class="primaryNavIcons" alt="Collaborate">
                                         <i aria-hidden="true" class="fa fa-comments"></i></a>
                                 </li>
                                 <li>
