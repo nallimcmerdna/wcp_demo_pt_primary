@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root version="2.1" xmlns:af="http://xmlns.oracle.com/adf/faces/rich" xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:wcdc="http://xmlns.oracle.com/webcenter/spaces/taglib">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <af:pageTemplateDef var="attrs">
+        <af:xmlContent>
+            <component xmlns="http://xmlns.oracle.com/adf/faces/rich/component">
+                <display-name>Pulse UX Demo</display-name>
+                <facet>
+                    <facet-name>content</facet-name>
+                </facet>
+            </component>
+        </af:xmlContent>
+        <af:panelGroupLayout id="mainpglwrapper" layout="default"
+                             styleClass="#{wcpContent.isContributionMode ? 'WCPortalCC' : ''} WCNonEditableArea ">
+            <meta content="width=device-width, initial-scale=1" name="viewport"/>
+            <!-- <link href="/webcenter/uilibs/fontawesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/> -->
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+                  rel="stylesheet" type="text/css"/>
+            <link href="/webcenter/uilibs/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+            <af:panelGroupLayout id="pt_pre" inlineStyle="display:none;" layout="vertical">
+                <wcdc:siteTemplateMetadata type="start" id="pt_stm1"/>
+            </af:panelGroupLayout>
+            <af:panelGroupLayout id="pt_tb" styleClass="WCEditableArea">
+                <wcdc:portalToolbar id="ptbdc"/>
+            </af:panelGroupLayout>
+            
+            <!-- Two dormant Bootstrap modal dialog boxes laying at the top of page for use by any page content that wishes to take advangate of them -->  
+            <div id="modal-lg" class="modal fade" tabindex="1" role="dialog" aria-labelledby="myLargeModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">[X]</span>
+                            </button>
+                             
+                            <h4 class="modal-title" id="modal-title-lg">&#160;</h4>
+                        </div>
+                        <div class="modal-body" id="modal-body-lg">&#160;</div>
+                        <div class="modal-footer" id="modal-footer-lg">&#160;</div>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-sm" class="modal fade" tabindex="2" role="dialog" aria-labelledby="mySmallModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">[X]</span>
+                            </button>
+                             
+                            <h4 class="modal-title" id="modal-title-sm">&#160;</h4>
+                        </div>
+                        <div class="modal-body" id="modal-body-sm">&#160;</div>
+                        <div class="modal-footer" id="modal-footer-sm">&#160;</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="WCSiteTemplateRoot" id="wrapper">
+
+                <div id="topNavigation" class="mini-navbar container">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="pull-right WCPortalAdminLinks" id="user-nav">
+                                <af:panelGroupLayout id="unavpgl" layout="horizontal">
+                                    <wcdc:spacesSwitcher __taskFlowId="createGroupSpaceRegion" id="wcCmdLinkGSSwit"
+                                                         popupContentDelivery="immediate" shortDesc="Pulse Sites"
+                                                         styleClass="ptext" text="Pulse Sites"/>
+                                    <af:region id="lang" rendered="#{!security.authenticated}" styleClass="text"
+                                               value="#{bindings.languageSelectorRegion.regionModel}"/>
+                                    <wcdc:spacesAction id="wcAdminLink"
+                                                       shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_ADMINISTRATION_DESC}"
+                                                       styleClass="adtext"
+                                                       text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_ADMINISTRATION}"
+                                                       type="administration"/>
+                                    <af:link clientComponent="true" id="actionsMenuLink"
+                                             rendered="#{!serviceCtx.scope.spaceTemplate and (WCAppContext.currentScope.default ? ((!AdminConfig.fusionAppsMode and security.homeSpaceEnabled) or security.webCenterAdministrator): empty pageFlowScope.contextActionsTaskFlow)}"
+                                             shortDesc="#{uib_o_w_w_r_WebCenter['NAV_TOOLS_ACTIONS_FOLDER.DESCRIPTION']}"
+                                             styleClass="actIcon" text="#{uib_o_w_w_r_WebCenter.LABEL_ACTIONS}">
+                                        <af:showPopupBehavior align="afterStart" alignId="actionsMenuLink"
+                                                              popupId="actnRegion:actionsDropdownPopup"/>
+                                    </af:link>
+                                    <af:region id="actnRegion"
+                                               rendered="#{!serviceCtx.scope.spaceTemplate and (WCAppContext.currentScope.default ? ((!AdminConfig.fusionAppsMode and security.homeSpaceEnabled) or security.webCenterAdministrator): true)}"
+                                               value="#{bindings.spacesActionSubmenu.regionModel}"/>
+                                    <wcdc:spacesAction displayType="menu" id="globalHelpmn"
+                                                       inlineStyle="white-space:nowrap"
+                                                       shortDesc="#{uib_o_w_w_r_WebCenter.LABEL_HELP_DESC}"
+                                                       styleClass="htext" text="#{uib_o_w_w_r_WebCenter.LABEL_HELP}"
+                                                       type="globalHelp"/>
+                                    <af:switcher facetName="#{security.authenticated ? 'loggedIn' : 'anonymous'}"
+                                                 id="tgtbps1">
+                                        <f:facet name="loggedIn">
+                                            <af:link id="userMenuLink" immediate="true"
+                                                     inlineStyle="white-space:nowrap;"
+                                                     shortDesc="#{uib_o_w_w_r_WebCenter.LABEL_USER_MENU}"
+                                                     styleClass="prtext" text="#{security.userDisplayName}">
+                                                <af:showPopupBehavior align="beforeEnd" alignId="userMenuLink"
+                                                                      popupId="userMenuPopup"/>
+                                            </af:link>
+                                            <af:popup id="userMenuPopup">
+                                                <af:menu id="pt_m1">
+                                                    <wcdc:userProfile displayType="menuItem" id="currUserWcLink"
+                                                                      immediate="true"
+                                                                      shortDesc="#{security.userDisplayName}"
+                                                                      styleClass="WCPortalProfileLink"
+                                                                      text="#{uib_o_w_w_r_WebCenter.TITLE_USER_PROFILE}"/>
+                                                    <wcdc:userPreferences __taskFlowId="preferenceRegion"
+                                                                          displayType="menuItem" id="wcPreferLink"
+                                                                          inlineStyle="white-space:nowrap;"
+                                                                          shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_PREFERENCES_DESC}"
+                                                                          text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_PREFERENCES}"/>
+                                                    <wcdc:spacesAction displayType="menuItem" id="wcLogoutLink"
+                                                                       inlineStyle="white-space:nowrap"
+                                                                       shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT_DESC}"
+                                                                       text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT}"
+                                                                       type="logout"/>
+                                                </af:menu>
+                                            </af:popup>
+                                        </f:facet>
+                                        <f:facet name="anonymous">
+                                            <wcdc:spacesAction id="wcLoginLink" inlineStyle="white-space:nowrap"
+                                                               shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGIN}"
+                                                               styleClass="litext"
+                                                               text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGIN}"
+                                                               type="login"/>
+                                            <wcdc:spacesAction id="selfRegWcLink" inlineStyle="white-space:nowrap"
+                                                               shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_SELFREG_DESC}"
+                                                               styleClass="srtext"
+                                                               text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_SELFREG}"
+                                                               type="selfRegistration"/>
+                                        </f:facet>
+                                    </af:switcher>
+                                </af:panelGroupLayout>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="siteHeader" class="container">
+                    <div class="row">
+                        <div class="col-sm-3 col-md-3 header-left">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-target=".navbar-collapse"
+                                        data-toggle="collapse" aria-expanded="false">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                 
+                                <a class="navbar-brand" href="/webcenter/portal/PulseHome">
+                                    <img alt="Brand" src="/images/Pulse.png"/></a>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-4 header-middle">
+                            <div id="stockInfo" class="navbar-collapse collapse">
+                                <af:panelGroupLayout id="stkpgl" layout="vertical" halign="center">
+                                    <af:outputText value="ANTM $164.99 Down -1.44 (0.87%)" styleClass="stockText"/>
+                                    <af:outputText value="April 17, 3:02 PM EDT"/>
+                                </af:panelGroupLayout>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 col-md-5 header-right">
+                            <div id="globalSearchBox" class="navbar-collapse collapse">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="bsSearchBox"
+                                           placeholder="Search for people or content..."
+                                           onKeydown="Javascript: if(event.keyCode==13) doSearch()"/>
+                                     
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default" type="button" onclick="doSearch();"
+                                           ref="javascript:void(0)">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></span>
+                                </div>
+                                <div class="input-group">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioSearchOptionsHdr" id="inlineRadioHdrPeople"
+                                               value="option1"/>
+                                        People
+                                    </label>
+                                     
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioSearchOptionsHdr"
+                                               id="inlineRadioHdrContent" value="option2" checked="checked"/>
+                                        Content
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="primaryNavigation" class="collapse navbar-collapse container" role="navigation">
+                    <ul class="nav nav-justified">
+                        <c:set var="navNodes"
+                               value="${navigationContext.defaultNavigationModel.listModel['startNode=/, includeStartNode=false']}"
+                               scope="session"/>
+                         
+                        <c:forEach var="menu" varStatus="vs" items="${navNodes}">
+                            <c:if test="${(menu.title != 'Top') and (menu.title != '~~') and ((menu.title != 'MyCommunities') or ((menu.title == 'MyCommunities') and (not empty menu.children))) }">
+                                <c:choose>
+                                    <c:when test="${empty menu.children}">
+                                        <li class="parentnode">
+                                            <a href="/webcenter${menu.goLinkPrettyUrl}">
+                                                ${menu.title}</a>
+                                        </li>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="i"
+                                               value="${((menu.childCount - (menu.childCount % 2)) / 2) - 1 + (menu.childCount % 2)}"/>
+                                        <li class="parentnode dropdown">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                               aria-expanded="false">
+                                                ${menu.title}<span class="ddIndicator">
+                                                    <i aria-hidden="true" class="fa fa fa-chevron-circle-down"></i></span></a>
+                                             
+                                            <c:choose>
+                                                <c:when test="${i} lt 3">
+                                                    <ul class="dropdown-menu" role="menu">
+                                                        <c:forEach var="child" items="#{menu.children}"
+                                                                   varStatus="loop">
+                                                            <li class="childnode">
+                                                                <c:choose>
+                                                                    <c:when test="${(child.title != 'Separator')}">
+                                                                        <a href="/webcenter${child.goLinkPrettyUrl}">
+                                                                            ${child.title}</a>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <hr/>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </li>
+                                                        </c:forEach>
+                                                    </ul>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <ul class="dropdown-menu multi-column columns-2" role="menu">
+                                                        <li class="row">
+                                                            <div class="col-sm-6 menuCol1">
+                                                                <ul class="multi-column-dropdown" role="menu">
+                                                                    <c:forEach var="child" items="#{menu.children}"
+                                                                               begin="0" end="${i}" varStatus="loop">
+                                                                        <li class="childnode">
+                                                                            <c:choose>
+                                                                                <c:when test="${(child.title != 'Separator')}">
+                                                                                    <a href="/webcenter${child.goLinkPrettyUrl}">
+                                                                                        ${child.title}</a>
+                                                                                </c:when>
+                                                                                <c:otherwise>
+                                                                                    <hr/>
+                                                                                </c:otherwise>
+                                                                            </c:choose>
+                                                                        </li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="col-sm-6 menuCol2">
+                                                                <ul class="multi-column-dropdown" role="menu">
+                                                                    <c:forEach var="child" items="#{menu.children}"
+                                                                               varStatus="loop">
+                                                                        <c:if test="${loop.index > i}">
+                                                                            <li class="childnode">
+                                                                                <c:choose>
+                                                                                    <c:when test="${(child.title != 'Separator')}">
+                                                                                        <a href="/webcenter${child.goLinkPrettyUrl}">
+                                                                                            ${child.title}</a>
+                                                                                    </c:when>
+                                                                                    <c:otherwise>
+                                                                                        <hr/>
+                                                                                    </c:otherwise>
+                                                                                </c:choose>
+                                                                            </li>
+                                                                        </c:if>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </li>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>
+                        </c:forEach>
+                        <li class="parentnode iconMenu">
+                            <ul class="nav nav-pills nav-justified">
+                                <li>
+                                    <a href="#" class="primaryNavIcons">
+                                        <i aria-hidden="true" class="fa fa-comments"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#" class="primaryNavIcons">
+                                        <i aria-hidden="true" class="fa fa-calendar"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#" class="primaryNavIcons">
+                                        <i aria-hidden="true" class="fa fa-address-card-o"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#" class="primaryNavIcons">
+                                        <i aria-hidden="true" class="fa fa-star"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#" class="primaryNavIcons">
+                                        <i aria-hidden="true" class="fa fa-laptop"></i></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div id="content" class="contentWrapper container">
+                    <af:panelGroupLayout layout="vertical" styleClass="WCEditableArea WCContent" id="pt_pgl1">
+                        <af:panelGroupLayout id="pt_pgl4" layout="horizontal" inlineStyle="margin: 4px 0px; font-size: 12px;" rendered="#{navigationContext.defaultNavigationModel.currentSelection.depth > 1}">
+                            <af:link text="Pulse Home" destination="/portal/PulseHome" inlineStyle="font-size: 12px;" />
+                            <af:iterator id="pt_i2"
+                                         value="#{navigationContext.defaultNavigationModel.currentSelection.ancestors}"
+                                         var="ancestor">
+                                <af:commandLink text="#{ancestor.title} " id="pt_cl3"
+                                                actionListener="#{navigationContext.processAction}" action="pprnav"
+                                                rendered="#{ancestor.navigable}"
+                                                disabled="#{ancestor.depth == 1}"
+                                                inlineStyle="font-size: 12px;">
+                                    <f:attribute name="node" value="#{ancestor}"/>
+                                </af:commandLink>
+                            </af:iterator>
+                            <af:outputText value="#{navigationContext.defaultNavigationModel.properties['currentSelection'].title}"
+                                           inlineStyle="font-size: 12px; color: #06A49F;"/>
+                            <f:facet name="separator">
+                                <af:spacer width="4" height="1" id="s101"/>
+                                <af:outputText value="&lt;i aria-hidden='true' class='fa fa-angle-double-right' />"
+                                               id="pt_ot221" escape="false"/>
+                                <af:spacer width="4" height="1" id="s102"/>
+                            </f:facet>
+                        </af:panelGroupLayout>
+                        <af:skipLinkTarget/>
+                        <af:facetRef facetName="content"/>
+                    </af:panelGroupLayout>
+                </div>
+                <footer class="footer container" id="footer">
+                    <div class="row bgStyle01" style="padding-bottom: 10px;">
+                        <div class="col-sm-4">
+                            <h3 class="text-color">
+                                <span class="border-color">Company Information</span>
+                            </h3>
+                            <ul class="content body-color">
+                                <li>
+                                    <a href="#">Purpose, vision and values</a>
+                                </li>
+                                <li>
+                                    <a href="#">Career opportunities</a>
+                                </li>
+                                <li>
+                                    <a href="#">Standards of ethical business conduct</a>
+                                </li>
+                                <li>
+                                    <a href="#">Report an ethics or privacy incident</a>
+                                </li>
+                                <li>
+                                    <a href="http://antheminc.com">Antheminc.com</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h3 class="text-color">
+                                <span class="border-color">Site Information</span>
+                            </h3>
+                            <ul class="content body-color">
+                                <li>
+                                    <a href="#">Get help</a>
+                                </li>
+                                <li>
+                                    <a href="#">Share your feedback</a>
+                                </li>
+                                <li>
+                                    <a href="#">Make request to contribute content</a>
+                                </li>
+                                <li>
+                                    <a href="#">Report errors or omissions</a>
+                                </li>
+                                <li>
+                                    <a href="#">View the privacy statement</a>
+                                </li>
+                            </ul>
+                            <af:outputFormatted id="cpyrght"
+                                                rendered="#{WCAppContext.currentScope.default ? not empty boilerBean.copyrightMessage : not empty boilerBean.copyrightMessageInSpace}"
+                                                value="#{WCAppContext.currentScope.default ? boilerBean.copyrightMessage : boilerBean.copyrightMessageInSpace}"/>
+                        </div>
+                        <div class="col-sm-4">
+                            <h3 class="text-color">
+                                <span class="border-color">Search</span>
+                            </h3>
+                            <div id="footerSearchBox">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="bsSearchBox2"
+                                           placeholder="Search for people or content..."
+                                           onKeydown="Javascript: if(event.keyCode==13) doSearch()"/>
+                                     
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-default" type="button" onclick="doSearch();"
+                                           ref="javascript:void(0)">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></span>
+                                </div>
+                                <div class="input-group">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioSearchOptionsFtr" id="inlineRadioFtrPeople"
+                                               value="option1"/>
+                                        People
+                                    </label>
+                                     
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioSearchOptionsFtr"
+                                               id="inlineRadioFtrContent" value="option2" checked="checked"/>
+                                        Content
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row footerBottom">
+                        <ul class="list-inline">
+                            <li>
+                                <span class="border-color">Get Social:</span>
+                            </li>
+                            <li>
+                                <a class="twitter" href="#">
+                                    <i class="fa fa-twitter"></i></a>
+                            </li>
+                            <li>
+                                <a class="facebook" href="#">
+                                    <i class="fa fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a class="pinterest" href="#">
+                                    <i class="fa fa-pinterest"></i></a>
+                            </li>
+                            <li>
+                                <a class="linkedin" href="#">
+                                    <i class="fa fa-linkedin"></i></a>
+                            </li>
+                            <li>
+                                <a class="plus" href="#">
+                                    <i class="fa fa-google-plus"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </footer>
+                 
+            </div>
+            <script language="javascript" src="/webcenter/uilibs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"/>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/custom.js" type="text/javascript"/>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/jquery.sticky.js" type="text/javascript"/> 
+            <af:panelGroupLayout id="pt_post" inlineStyle="display:none;" layout="vertical">
+                <wcdc:siteTemplateMetadata type="end" id="pt_stm2"/>
+            </af:panelGroupLayout>
+        </af:panelGroupLayout>
+    </af:pageTemplateDef>
+</jsp:root>

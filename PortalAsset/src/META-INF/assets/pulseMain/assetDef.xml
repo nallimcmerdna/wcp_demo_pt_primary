@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:pageTemplate xmlns:ns0="http://xmlns.oracle.com/webcenter/assetpublishing/assetdef">
+   <name>PulseMain</name>
+   <displayName>Pulse Main</displayName>
+   <sourcePath>/pulseMain</sourcePath>
+   <pagePath>PulseMain.jspx</pagePath>
+   <pageDefinitionPath>PulseMainPageDef.xml</pageDefinitionPath>
+</ns0:pageTemplate>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://xmlns.oracle.com/adfm/application" version="12.2.1.16.48" id="DataBindings"
+             SeparateXMLFiles="false" Package="com.nallimcmerdna.webcenter.portal" ClientType="Generic">
+  <pageMap>
+    <page path="/pulseMain/PulseMain.jspx" usageId="com_nallimcmerdna_webcenter_portal_PulseMainPageDef"/>
+  </pageMap>
+  <pageDefinitionUsages>
+    <page id="com_nallimcmerdna_webcenter_portal_PulseMainPageDef" path="pulseMain.PulseMainPageDef"/>
+  </pageDefinitionUsages>
+</Application>
