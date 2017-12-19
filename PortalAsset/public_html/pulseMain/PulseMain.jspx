@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<jsp:root version="2.1" xmlns:af="http://xmlns.oracle.com/adf/faces/rich" xmlns:f="http://java.sun.com/jsf/core"
-          xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page"
+<jsp:root version="2.1" xmlns:af="http://xmlns.oracle.com/adf/faces/rich" 
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:f="http://java.sun.com/jsf/core" xmlns:jsp="http://java.sun.com/JSP/Page"
           xmlns:wcdc="http://xmlns.oracle.com/webcenter/spaces/taglib">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <af:pageTemplateDef var="attrs">
@@ -15,24 +16,31 @@
         <af:panelGroupLayout id="mainpglwrapper" layout="default"
                              styleClass="#{wcpContent.isContributionMode ? 'WCPortalCC' : ''} WCNonEditableArea ">
             <meta content="width=device-width, initial-scale=1" name="viewport"/>
-            <!-- <link href="/webcenter/uilibs/fontawesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/> -->
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
                   rel="stylesheet" type="text/css"/>
             <link href="/webcenter/uilibs/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+            <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css"/>
             <af:panelGroupLayout id="pt_pre" inlineStyle="display:none;" layout="vertical">
-                <wcdc:siteTemplateMetadata type="start" id="pt_stm1"/>
+                <wcdc:siteTemplateMetadata id="pt_stm1" type="start"/>
             </af:panelGroupLayout>
+            <!--         
+            Turn off contribute toolbar
             <af:panelGroupLayout id="pt_tb" styleClass="WCEditableArea">
                 <wcdc:portalToolbar id="ptbdc"/>
             </af:panelGroupLayout>
-            
-            <!-- Two Bootstrap modal dialog boxes laying at the top of page for use by any page content that wishes to take advangate of them -->  
-            <div id="modal-lg" class="modal fade" tabindex="1" role="dialog" aria-labelledby="myLargeModalLabel"
-                 aria-hidden="true">
+-->
+<c:set scope="session" var="headerType" value="fixedHeader" />
+<c:if test="${changeModeBean.inEditMode}">
+    <c:set scope="session" var="headerType" value="scrollableHeader"/>
+</c:if>
+
+            <!-- BEGIN: Modal Dialog Boxes | Available for any service that cares to user them -->
+            <div id="modal-lg" aria-hidden="true" aria-labelledby="myLargeModalLabel" class="modal fade" role="dialog"
+                 tabindex="1">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header bg-warning">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
                                 <span aria-hidden="true">[X]</span>
                             </button>
                              
@@ -43,12 +51,12 @@
                     </div>
                 </div>
             </div>
-            <div id="modal-sm" class="modal fade" tabindex="2" role="dialog" aria-labelledby="mySmallModalLabel"
-                 aria-hidden="true">
+            <div id="modal-sm" aria-hidden="true" aria-labelledby="mySmallModalLabel" class="modal fade" role="dialog"
+                 tabindex="2">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header bg-info">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
                                 <span aria-hidden="true">[X]</span>
                             </button>
                              
@@ -59,404 +67,691 @@
                     </div>
                 </div>
             </div>
+            <!-- END: Modal Dialog Boxes -->
+            
             
             <div class="WCSiteTemplateRoot" id="wrapper">
+                
+                <!-- BEGIN: Fixed Region | Header region above scrollable content -->
+                <div id="${headerType}" class="${headerType}">
+                    
+                    <!-- BEGIN: Top Navigation Bar | Used for links specific to the session of the currently logged on user -->
+                    <div id="topNavigation" class="collapse">
+                        <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="pull-right">
+                                    <af:panelGroupLayout id="topNavigation-pgl" layout="horizontal">
+                                        <!-- User Name Display -->
+                                        <af:panelGroupLayout layout="horizontal">
+                                            <span class="displayName">Logged in as 
+                                                ${security.userDisplayName}</span>(${securityContext.userName})
+                                        </af:panelGroupLayout>
+                                        <!-- Node -->
+                                        <af:panelGroupLayout layout="horizontal">
+                                            <a href="#"><span class="topbarLinkText">Node WC_PORTAL06</span></a>
+                                        </af:panelGroupLayout>
+                                        <!-- Profile -->
+                                        <af:panelGroupLayout layout="horizontal">
+                                            <a href="#" id="myProfile">
+                                                <i aria-hidden="true" class="fa fa-address-card-o"></i><span class="topbarLinkText">Profile</span></a>
+                                        </af:panelGroupLayout>
+                                        <!-- Mimic User -->
+                                        <af:panelGroupLayout layout="horizontal">
+                                            <a href="#" id="mimicUser">
+                                                <i aria-hidden="true" class="fa fa-user"></i><span class="topbarLinkText">Mimic User</span></a>
+                                        </af:panelGroupLayout>
+                                        <!-- Cache Control -->
+                                        <af:panelGroupLayout layout="horizontal">
+                                            <a href="#" id="cacheControl">
+                                                <i aria-hidden="true" class="fa fa-money"></i><span class="topbarLinkText">Cache Control</span></a>
+                                        </af:panelGroupLayout>
+                                        <!-- Logout -->
+                                        <wcdc:spacesAction id="wcLogoutLink"
+                                                           shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT_DESC}"
+                                                           text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT}"
+                                                           styleClass="adminLink" type="logout"/>
+                                        <!-- Administration Link -->
+                                        <wcdc:spacesAction id="wcAdminLink"
+                                                           shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_ADMINISTRATION_DESC}"
+                                                           styleClass="adminLink" text="Admin" type="administration"/>
+                                    </af:panelGroupLayout>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <!-- END: Top Navigation Bar -->
+                    
+                    <!-- BEGIN: Site Header  -->
+                    <div id="siteHeader" class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12">
+                                <div role="navigation">
+                                    <ul id="siteHeaderLinks" class="nav navbar-right">
+                                        <li>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm dropdown-toggle stock-ticker" type="button"
+                                                        data-toggle="dropdown" role="button" aria-haspopup="true">
+                                                    <i class="fa fa-line-chart" aria-hidden="true"></i>
+                                                    <span class="stock-ticker-label">ANTM</span>
+                                                    <span class="stock-ticker-value">219.11</span>
+                                                    <span class="stock-ticker-change green">+0.84</span>
+                                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="in-context dropdown-menu stock-ticker-dropdown" role="menu"
+                                                    aria-labelledby="dLabel">
+                                                    <li>
+                                                        <a href="http://ir.antheminc.com/phoenix.zhtml?c=130104&amp;p=irol-irhome"
+                                                           target="investors">
+                                                            <span class="stock-ticker-item">
+                                                                <i class="ticker-label">NYSE</i><i class="ticker-value"></i></span><span class="stock-ticker-item"> 
+                                                                <i class="ticker-label">DJIA</i><i class="ticker-value"></i>
+                                                                 </span><span class="stock-ticker-item"> 
+                                                                <i class="ticker-label">SP500 2584.84</i><i class="ticker-value red">0.00</i>
+                                                                 </span><span class="stock-ticker-item">
+                                                                <i class="ticker-label">NASDAQ 6727.01</i><i class="ticker-value red">-30.58</i></span></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="btn btn-sm site-tips" type="button">Site Tips</a>
+                                        </li>
+                                        <li>
+                                            <af:switcher facetName="#{security.authenticated ? 'loggedIn' : 'anonymous'}"
+                                                         id="tgtbps1">
+                                                <f:facet name="loggedIn">
+                                                    <af:panelGroupLayout id="pt_pgl2">
+                                                        <div class="dropdown">
+                                                            <button type="button" id="notificationIndicatorBtn"
+                                                                    aria-controls="notificationIndicatorBtn"
+                                                                    aria-expanded="false"
+                                                                    class="btn notificationIndicatorBtn"
+                                                                    data-toggle="dropdown" role="button">18</button>
+                                                            <div class="in-context dropdown-menu notification-dropdown"
+                                                                 role="menu" aria-labelledby="dLabel">
+                                                                <div class="dropdown-menu-header">
+                                                                    <div class="title">Notifications</div>
+                                                                    <div class="view-all clearfix">
+                                                                        <a href="#">
+                                                                            <span class="clear-button">View All</span></a>
+                                                                    </div>
+                                                                </div>
+                                                                <div id="notification-content"
+                                                                     class="dropdown-menu-content">AJAX content inserted
+                                                                                                   here upon button
+                                                                                                   invocation...</div>
+                                                            </div>
+                                                        </div>
+                                                        <button id="myProfileBtn" aria-controls="myProfileBtn"
+                                                                aria-expanded="false" class="btn btn-sm myProfileBtn"
+                                                                data-target="#topNavigation" data-toggle="collapse"
+                                                                type="button">
+                                                            <img src="https://s3.amazonaws.com/pulse-demo-owc12c/${securityContext.userName}.png"
+                                                                 alt="#{security.userDisplayName}"/>
+                                                        </button>
+                                                    </af:panelGroupLayout>
+                                                </f:facet>
+                                                <f:facet name="anonymous">
+                                                    <af:panelGroupLayout id="pt_pgl3">
+                                                        <a href="/webcenter/wcAuthentication" class="btn btn-sm"
+                                                           type="button">Login</a>
+                                                    </af:panelGroupLayout>
+                                                </f:facet>
+                                            </af:switcher>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 col-md-4 header-left">
+                                <div class="navbar-header">
+                                 <!--   destination="#{WCAppContext.currentScope.default ? boilerBean.globalLogoURI : boilerBean.globalLogoURIInSpace}" -->
 
-                <div id="topNavigation" class="mini-navbar container">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="pull-right WCPortalAdminLinks" id="user-nav">
-                                <af:panelGroupLayout id="unavpgl" layout="horizontal">
-                                    <wcdc:spacesSwitcher __taskFlowId="createGroupSpaceRegion" id="wcCmdLinkGSSwit"
-                                                         popupContentDelivery="immediate" shortDesc="Pulse Sites"
-                                                         styleClass="ptext" text="Pulse Sites"/>
-                                    <af:region id="lang" rendered="#{!security.authenticated}" styleClass="text"
-                                               value="#{bindings.languageSelectorRegion.regionModel}"/>
-                                    <wcdc:spacesAction id="wcAdminLink"
-                                                       shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_ADMINISTRATION_DESC}"
-                                                       styleClass="adtext"
-                                                       text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_ADMINISTRATION}"
-                                                       type="administration"/>
-                                    <af:link clientComponent="true" id="actionsMenuLink"
-                                             rendered="#{!serviceCtx.scope.spaceTemplate and (WCAppContext.currentScope.default ? ((!AdminConfig.fusionAppsMode and security.homeSpaceEnabled) or security.webCenterAdministrator): empty pageFlowScope.contextActionsTaskFlow)}"
-                                             shortDesc="#{uib_o_w_w_r_WebCenter['NAV_TOOLS_ACTIONS_FOLDER.DESCRIPTION']}"
-                                             styleClass="actIcon" text="#{uib_o_w_w_r_WebCenter.LABEL_ACTIONS}">
-                                        <af:showPopupBehavior align="afterStart" alignId="actionsMenuLink"
-                                                              popupId="actnRegion:actionsDropdownPopup"/>
-                                    </af:link>
-                                    <af:region id="actnRegion"
-                                               rendered="#{!serviceCtx.scope.spaceTemplate and (WCAppContext.currentScope.default ? ((!AdminConfig.fusionAppsMode and security.homeSpaceEnabled) or security.webCenterAdministrator): true)}"
-                                               value="#{bindings.spacesActionSubmenu.regionModel}"/>
-                                    <wcdc:spacesAction displayType="menu" id="globalHelpmn"
-                                                       inlineStyle="white-space:nowrap"
-                                                       shortDesc="#{uib_o_w_w_r_WebCenter.LABEL_HELP_DESC}"
-                                                       styleClass="htext" text="#{uib_o_w_w_r_WebCenter.LABEL_HELP}"
-                                                       type="globalHelp"/>
-                                    <af:switcher facetName="#{security.authenticated ? 'loggedIn' : 'anonymous'}"
-                                                 id="tgtbps1">
-                                        <f:facet name="loggedIn">
-                                            <af:link id="userMenuLink" immediate="true"
-                                                     inlineStyle="white-space:nowrap;"
-                                                     shortDesc="#{uib_o_w_w_r_WebCenter.LABEL_USER_MENU}"
-                                                     styleClass="prtext" text="#{security.userDisplayName}">
-                                                <af:showPopupBehavior align="beforeEnd" alignId="userMenuLink"
-                                                                      popupId="userMenuPopup"/>
-                                            </af:link>
-                                            <af:popup id="userMenuPopup">
-                                                <af:menu id="pt_m1">
-                                                    <wcdc:userProfile displayType="menuItem" id="currUserWcLink"
-                                                                      immediate="true"
-                                                                      shortDesc="#{security.userDisplayName}"
-                                                                      styleClass="WCPortalProfileLink"
-                                                                      text="#{uib_o_w_w_r_WebCenter.TITLE_USER_PROFILE}"/>
-                                                    <wcdc:userPreferences __taskFlowId="preferenceRegion"
-                                                                          displayType="menuItem" id="wcPreferLink"
-                                                                          inlineStyle="white-space:nowrap;"
-                                                                          shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_PREFERENCES_DESC}"
-                                                                          text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_PREFERENCES}"/>
-                                                    <wcdc:spacesAction displayType="menuItem" id="wcLogoutLink"
-                                                                       inlineStyle="white-space:nowrap"
-                                                                       shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT_DESC}"
-                                                                       text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGOUT}"
-                                                                       type="logout"/>
-                                                </af:menu>
-                                            </af:popup>
-                                        </f:facet>
-                                        <f:facet name="anonymous">
-                                            <wcdc:spacesAction id="wcLoginLink" inlineStyle="white-space:nowrap"
-                                                               shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGIN}"
-                                                               styleClass="litext"
-                                                               text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_LOGIN}"
-                                                               type="login"/>
-                                            <wcdc:spacesAction id="selfRegWcLink" inlineStyle="white-space:nowrap"
-                                                               shortDesc="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_SELFREG_DESC}"
-                                                               styleClass="srtext"
-                                                               text="#{uib_o_w_w_r_WebCenter.GLOBAL_LINK_SELFREG}"
-                                                               type="selfRegistration"/>
-                                        </f:facet>
-                                    </af:switcher>
-                                </af:panelGroupLayout>
+                                    <a class="navbar-brand" href="/webcenter#{boilerBean.globalLogoURIInSpace}" tabindex="1">
+                                        <img alt="Brand" src="/images/pulse_one_anthem_logo.png"/></a>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 col-md-8 header-right">
+                                <div id="globalSearchBox" class="#{security.authenticated ? 'loggedIn' : 'anonymous'}">
+                                    <div class="input-group">
+                                        <input class="form-control" id="searchInputText"
+                                               onKeydown="Javascript: if(event.keyCode==13) doSearch();"
+                                               placeholder="Search Pulse..." type="text" tabindex="2"/>
+                                         
+                                        <span id="searchBtn" class="input-group-btn">
+                                            <button class="btn btn-default" type="button" tabindex="3">
+                                                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                                            </button></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="siteHeader" class="container">
-                    <div class="row">
-                        <div class="col-sm-3 col-md-3 header-left">
-                            <div class="navbar-header">
-                                <button type="button" class="navbar-toggle collapsed" data-target=".navbar-collapse"
-                                        data-toggle="collapse" aria-expanded="false">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
+                    <!-- END: Site Header  -->
+                    
+                    <!-- BEGIN: Primary Navigation Bar | Mega menu + dashboard links -->
+                    <div id="primaryNavigation" role="navigation">
+                        <div class="container">
+                            <button aria-expanded="false" class="navbar-toggle collapsed megaMenu" data-target="#megaMenu"
+                                    data-toggle="collapse" type="button">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            
+                            <!-- BEGIN: Mega Menu -->
+                            <ul id="megaMenu" class="collapse navbar-collapse nav navbar-nav">
+                                <c:set scope="session" var="portalpage"
+                                       value="${navigationContext.defaultNavigationModel.listModel['startNode=/, includeStartNode=false']}"/>
                                  
-                                <a class="navbar-brand" href="/webcenter/portal/PulseHome">
-                                    <img alt="Brand" src="/images/Pulse.png"/></a>
+                                <c:set scope="session" var="maxNumberTopElements" value="5"/>
+                                 
+                                <c:set scope="session" var="maxNumberSecondaryElements" value="3"/>
+                                 
+                                <c:set scope="session" var="topNodeCounter" value="0"/>
+                                 
+                                <c:forEach items="${portalpage}" var="parentNode" varStatus="vs">
+                                    <!-- There are a few special page names that are treaed as exceptions to the megamenu -->
+                                    <c:if test="${(parentNode.title != 'Top') and (parentNode.title != 'Services') and ((parentNode.title != 'MyCommunities') or ((parentNode.title == 'MyCommunities') and (not empty parentNode.children))) }">
+                                        <c:choose>
+                                            
+                                            <c:when test="${empty parentNode.children}">
+                                            <!-- This parentNode has no children -->
+                                                <li class="parentnode">
+                                                    <a href="/webcenter${parentNode.goLinkPrettyUrl}">
+                                                        ${parentNode.title}
+                                                    </a>
+                                                </li>
+                                            </c:when>   
+                                            <c:otherwise>
+                                            <!-- This topNode has one or more children -->
+                                                <li class="parentnode dropdown">
+                                                    <a aria-expanded="false" class="dropdown-toggle" data-toggle="dropdown"
+                                                        href="#" role="button">
+                                                        ${parentNode.title}
+                                                        <span class="submenuIndicator pull-right"><i aria-hidden="true" class="fa fa fa-chevron-down"/></span>
+                                                    </a>
+                                                    
+                                                    <c:choose>
+                                                        <c:when test="${parentNode.parameters['noOfColumns'] == '2'}">
+                                                            <c:set var="colClass" value="col-sm-6"/>
+                                                        </c:when>
+                                                        <c:when test="${parentNode.parameters['noOfColumns'] == '3'}">
+                                                            <c:set var="colClass" value="col-sm-4"/>
+                                                        </c:when>
+                                                        <c:when test="${parentNode.parameters['noOfColumns'] == '4'}}">
+                                                            <c:set var="colClass" value="col-sm-3"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="colClass" value="col-sm-3"/>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+                                                    <ul class="dropdown-menu" role="menu">
+                                                        <!-- optionally show a link to the landing page (parent node) -->
+                                                        <c:if test="${parentNode.parameters['landingPageShown'] == 'true'}">
+                                                            <div class="child-menu row">
+                                                                <div class="col-sm-12" >
+                                                                    <a class="parentnode" href="/webcenter${parentNode.goLinkPrettyUrl}">
+                                                                        ${parentNode.title} Home
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </c:if>
+                                                        <!-- loop through each child -->
+                                                        <div class="child-menu row">
+                                                         <c:forEach items="#{parentNode.children}" var="childNode" varStatus="childLoop">
+                                                            <div class="${colClass}" >
+                                                                <c:choose>
+                                                                    <c:when test="${(childNode.title != 'Separator')}">
+                                                                        <a class="childnode" href="/webcenter${childNode.goLinkPrettyUrl}">
+                                                                            ${childNode.title}
+                                                                        </a>
+                                                                        <c:when test="${not empty childNode.children}">
+                                                                            <ul class="grandchildmenu" role="menu">
+                                                                                <!-- loop through each child -->
+                                                                                <c:forEach items="#{childNode.children}" var="grandchildNode" varStatus="grandchildLoop">
+                                                                                    <li class="grandchildnode">
+                                                                                        <c:when test="${(grandchildNode.title != 'Separator')}">
+                                                                                            <a class="grandchildnode" href="/webcenter${grandchildNode.goLinkPrettyUrl}">
+                                                                                            ${grandchildNode.title}
+                                                                                            </a>
+                                                                                        </c:when>
+                                                                                    </li>
+                                                                                </c:forEach>
+                                                                            </ul>
+                                                                        </c:when>
+                                                                    </c:when>
+                                                                </c:choose>
+                                                            </div>
+                                                         </c:forEach>
+                                                            <c:if test="${parentNode.parameters['featureShown'] == 'true'}">
+                                                                <div class="${colClass}" >
+                                                                    <a class="megamenu-feature" href="${parentNode.parameters['featureLink']}" target="${parentNode.parameters['featureTarget']}">
+                                                                        <img src="${parentNode.parameters['featureImage']}" />
+                                                                        <p>${parentNode.parameters['featureText']}</p> 
+                                                                    </a>
+                                                                </div>
+                                                            </c:if>
+                                                        </div>
+                                                    </ul>
+                                                </li>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:if>
+                                </c:forEach>
+                            </ul>
+                            <!-- END: Mega Menu  -->
+                            
+                            <!-- BEGIN: Dashboard Menu  -->
+                            <div id="dashboardMenu" class="nav navbar-right">
+                                <ul class="nav">
+                                    <li>
+                                        <div class="dropdown">
+                                            <button id="dashboard-collaborate-btn" type="button"
+                                                    class="btn dashboardIcons" data-toggle="dropdown">
+                                                <i aria-hidden="true" class="fa fa-comments"></i>
+                                            </button>
+                                            <div id="dashboard-collaborate"
+                                                 class="in-context dropdown-menu dashboard-dropdown" role="menu"
+                                                 aria-labelledby="dLabel">
+                                                <div class="dropdown-menu-header">
+                                                    <div class="title">Collaborate</div>
+                                                    <div class="view-all clearfix">
+                                                        <a href="/webenter/portal/PulseHome/pages_services/collaborate">
+                                                            <span class="clear-button">View All</span></a>
+                                                    </div>
+                                                </div>
+                                                <div id="events-collaborate" class="dropdown-menu-content">Content
+                                                                                                           here...</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown">
+                                            <button id="dashboard-events-btn" type="button" class="btn dashboardIcons"
+                                                    data-toggle="dropdown">
+                                                <i aria-hidden="true" class="fa fa-calendar"></i>
+                                            </button>
+                                            <div id="dashboard-events"
+                                                 class="in-context dropdown-menu dashboard-dropdown" role="menu"
+                                                 aria-labelledby="dLabel">
+                                                <div class="dropdown-menu-header">
+                                                    <div class="title">Upcoming Events</div>
+                                                    <div class="view-all clearfix">
+                                                        <a href="#">
+                                                            <span class="clear-button">View All</span></a>
+                                                    </div>
+                                                </div>
+                                                <div id="events-content" class="dropdown-menu-content">AJAX content
+                                                                                                       inserted here
+                                                                                                       upon button
+                                                                                                       invocation...</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown">
+                                            <button id="dashboard-people-btn" type="button"
+                                                    class="btn dashboardIcons dropdown-toggle" data-toggle="dropdown">
+                                                <i aria-hidden="true" class="fa fa-users"></i>
+                                            </button>
+                                            <div id="dashboard-people"
+                                                 class="in-context dropdown-menu dashboard-dropdown">
+                                                <div class="dropdown-menu-header">
+                                                    <div class="title">People Finder</div>
+                                                    <div class="view-all clearfix">
+                                                        <a href="#">
+                                                            <span class="clear-button">Search Tips</span></a>
+                                                    </div>
+                                                </div>
+                                                <div id="people-content" class="dropdown-menu-content">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" id="firstName"
+                                                               placeholder="First Name"/>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" id="lastName"
+                                                               placeholder="Last Name"/>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-default">Search</button>
+                                                    <p class="help-block">
+                                                        <a href="#">Advanced Search</a>
+                                                    </p>
+                                                    <hr/>
+                                                    <p>
+                                                        <a href="#">Printable Org Charts</a>&#160;(IE Only)<br/>
+                                                         
+                                                        <a href="#">Associate Report</a><br/>
+                                                         
+                                                        <a href="#">Locations Report</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown">
+                                            <button id="dashboard-favorites-btn" type="button"
+                                                    class="btn dashboardIcons" data-toggle="dropdown">
+                                                <i aria-hidden="true" class="fa fa-star"></i>
+                                            </button>
+                                            <div id="dashboard-favorites"
+                                                 class="in-context dropdown-menu dashboard-dropdown" role="menu"
+                                                 aria-labelledby="dLabel">
+                                                <div class="dropdown-menu-header">
+                                                    <div class="title">Favorites</div>
+                                                    <div class="view-all clearfix">
+                                                        <a href="#">
+                                                            <span class="clear-button">View All</span></a>
+                                                    </div>
+                                                </div>
+                                                <div id="favorites-content" class="dropdown-menu-content">AJAX content
+                                                                                                          inserted here
+                                                                                                          upon button
+                                                                                                          invocation...</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown">
+                                            <button id="dashboard-apps-btn" type="button" class="btn dashboardIcons"
+                                                    data-toggle="dropdown">
+                                                <i aria-hidden="true" class="fa fa-laptop"></i>
+                                            </button>
+                                            <div id="dashboard-apps" class="in-context dropdown-menu dashboard-dropdown"
+                                                 role="menu" aria-labelledby="dLabel">
+                                                <div class="dropdown-menu-header">
+                                                    <div class="title">My Apps</div>
+                                                    <div class="view-all clearfix">
+                                                        <a href="#">
+                                                            <span class="clear-button">View All</span></a>
+                                                    </div>
+                                                </div>
+                                                <div id="apps-content" class="dropdown-menu-content">AJAX content
+                                                                                                     inserted here upon
+                                                                                                     button invocation...</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="col-sm-4 col-md-4 header-middle">
-                            <div id="stockInfo" class="navbar-collapse collapse">
-                                <af:panelGroupLayout id="stkpgl" layout="vertical" halign="center">
-                                    <af:outputText value="ANTM $164.99 Down -1.44 (0.87%)" styleClass="stockText"/>
-                                    <af:outputText value="April 17, 3:02 PM EDT"/>
-                                </af:panelGroupLayout>
-                            </div>
-                        </div>
-                        <div class="col-sm-5 col-md-5 header-right">
-                            <div id="globalSearchBox" class="navbar-collapse collapse">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="bsSearchBox"
-                                           placeholder="Search for people or content..."
-                                           onKeydown="Javascript: if(event.keyCode==13) doSearch()"/>
-                                     
-                                    <span class="input-group-btn">
-                                        <a class="btn btn-default" type="button" onclick="doSearch();"
-                                           ref="javascript:void(0)">
-                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></span>
-                                </div>
-                                <div class="input-group">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inlineRadioSearchOptionsHdr" id="inlineRadioHdrPeople"
-                                               value="option1"/>
-                                        People
-                                    </label>
-                                     
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inlineRadioSearchOptionsHdr"
-                                               id="inlineRadioHdrContent" value="option2" checked="checked"/>
-                                        Content
-                                    </label>
-                                </div>
-                            </div>
+                            <!-- END: Dashboard Menu  -->
                         </div>
                     </div>
+                    <!-- END: Primary Navigation Bar -->
+                    
                 </div>
-                <div id="primaryNavigation" class="collapse navbar-collapse container" role="navigation">
-                    <ul class="nav nav-justified">
-                        <c:set var="navNodes"
-                               value="${navigationContext.defaultNavigationModel.listModel['startNode=/, includeStartNode=false']}"
-                               scope="session"/>
-                         
-                        <c:forEach var="menu" varStatus="vs" items="${navNodes}">
-                            <c:if test="${(menu.title != 'Top') and (menu.title != 'Services') and ((menu.title != 'MyCommunities') or ((menu.title == 'MyCommunities') and (not empty menu.children))) }">
-                                <c:choose>
-                                    <c:when test="${empty menu.children}">
-                                        <li class="parentnode">
-                                            <a href="/webcenter${menu.goLinkPrettyUrl}">
-                                                ${menu.title}</a>
-                                        </li>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:set var="i"
-                                               value="${((menu.childCount - (menu.childCount % 2)) / 2) - 1 + (menu.childCount % 2)}"/>
-                                        <li class="parentnode dropdown">
-                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                               aria-expanded="false">
-                                                ${menu.title}<span class="ddIndicator">
-                                                    <i aria-hidden="true" class="fa fa fa-chevron-circle-down"></i></span></a>
-                                             
-                                            <c:choose>
-                                                <c:when test="${i} lt 3">
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <c:forEach var="child" items="#{menu.children}"
-                                                                   varStatus="loop">
-                                                            <li class="childnode">
-                                                                <c:choose>
-                                                                    <c:when test="${(child.title != 'Separator')}">
-                                                                        <a href="/webcenter${child.goLinkPrettyUrl}">
-                                                                            ${child.title}</a>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <hr/>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </li>
-                                                        </c:forEach>
-                                                    </ul>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <ul class="dropdown-menu multi-column columns-2" role="menu">
-                                                        <li class="row">
-                                                            <div class="col-sm-6 menuCol1">
-                                                                <ul class="multi-column-dropdown" role="menu">
-                                                                    <c:forEach var="child" items="#{menu.children}"
-                                                                               begin="0" end="${i}" varStatus="loop">
-                                                                        <li class="childnode">
-                                                                            <c:choose>
-                                                                                <c:when test="${(child.title != 'Separator')}">
-                                                                                    <a href="/webcenter${child.goLinkPrettyUrl}">
-                                                                                        ${child.title}</a>
-                                                                                </c:when>
-                                                                                <c:otherwise>
-                                                                                    <hr/>
-                                                                                </c:otherwise>
-                                                                            </c:choose>
-                                                                        </li>
-                                                                    </c:forEach>
-                                                                </ul>
-                                                            </div>
-                                                            <div class="col-sm-6 menuCol2">
-                                                                <ul class="multi-column-dropdown" role="menu">
-                                                                    <c:forEach var="child" items="#{menu.children}"
-                                                                               varStatus="loop">
-                                                                        <c:if test="${loop.index > i}">
-                                                                            <li class="childnode">
-                                                                                <c:choose>
-                                                                                    <c:when test="${(child.title != 'Separator')}">
-                                                                                        <a href="/webcenter${child.goLinkPrettyUrl}">
-                                                                                            ${child.title}</a>
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        <hr/>
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </li>
-                                                                        </c:if>
-                                                                    </c:forEach>
-                                                                </ul>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </li>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
-                        </c:forEach>
-                        <li class="parentnode iconMenu">
-                            <ul class="nav nav-pills nav-justified">
-                                <li>
-                                    <a href="/webcenter/portal/PulseHome/pages_top/collaborate" class="primaryNavIcons" alt="Collaborate">
-                                        <i aria-hidden="true" class="fa fa-comments"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="primaryNavIcons">
-                                        <i aria-hidden="true" class="fa fa-calendar"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="primaryNavIcons">
-                                        <i aria-hidden="true" class="fa fa-address-card-o"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="primaryNavIcons">
-                                        <i aria-hidden="true" class="fa fa-star"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="primaryNavIcons">
-                                        <i aria-hidden="true" class="fa fa-laptop"></i></a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <div id="content" class="contentWrapper container">
-                    <af:panelGroupLayout layout="vertical" styleClass="WCEditableArea WCContent" id="pt_pgl1">
-                        <af:panelGroupLayout id="pt_pgl4" layout="horizontal" inlineStyle="margin: 4px 0px; font-size: 12px;" rendered="#{navigationContext.defaultNavigationModel.currentSelection.depth > 1}">
-                            <af:link text="Pulse Home" destination="/portal/PulseHome" inlineStyle="font-size: 12px;" />
+                <!-- END: Fixed Region  -->
+                
+                <!-- BEGIN: Content Region | The actual content for each page goes here -->
+                <div id="content" class="contentWrapper container ${headerType}">
+                    <af:panelGroupLayout id="pt_pgl1" layout="vertical" styleClass="WCEditableArea WCContent">
+                        <af:panelGroupLayout id="pt_pgl4" inlineStyle="margin: 4px 0px; font-size: 12px;"
+                                             layout="horizontal"
+                                             rendered="#{navigationContext.defaultNavigationModel.currentSelection.depth > 1}">
+                            <af:link destination="/portal/PulseHome" inlineStyle="font-size: 12px;" text="Pulse Home"/>
                             <af:iterator id="pt_i2"
                                          value="#{navigationContext.defaultNavigationModel.currentSelection.ancestors}"
                                          var="ancestor">
-                                <af:commandLink text="#{ancestor.title} " id="pt_cl3"
-                                                actionListener="#{navigationContext.processAction}" action="pprnav"
-                                                rendered="#{ancestor.navigable}"
-                                                disabled="#{ancestor.depth == 1}"
-                                                inlineStyle="font-size: 12px;">
+                                <af:commandLink action="pprnav" actionListener="#{navigationContext.processAction}"
+                                                disabled="#{ancestor.depth == 1}" id="pt_cl3"
+                                                inlineStyle="font-size: 12px;" rendered="#{ancestor.navigable}"
+                                                text="#{ancestor.title} ">
                                     <f:attribute name="node" value="#{ancestor}"/>
                                 </af:commandLink>
                             </af:iterator>
-                            <af:outputText value="#{navigationContext.defaultNavigationModel.properties['currentSelection'].title}"
-                                           inlineStyle="font-size: 12px; color: #06A49F;"/>
+                            <af:outputText inlineStyle="font-size: 12px; color: #06A49F;"
+                                           value="#{navigationContext.defaultNavigationModel.properties['currentSelection'].title}"/>
                             <f:facet name="separator">
-                                <af:spacer width="4" height="1" id="s101"/>
-                                <af:outputText value="&lt;i aria-hidden='true' class='fa fa-angle-double-right' />"
-                                               id="pt_ot221" escape="false"/>
-                                <af:spacer width="4" height="1" id="s102"/>
+                                <af:spacer height="1" id="s101" width="4"/>
+                                <af:outputText escape="false" id="pt_ot221"
+                                               value="&lt;i aria-hidden='true' class='fa fa-angle-double-right' />"/>
+                                <af:spacer height="1" id="s102" width="4"/>
                             </f:facet>
                         </af:panelGroupLayout>
                         <af:skipLinkTarget/>
                         <af:facetRef facetName="content"/>
                     </af:panelGroupLayout>
                 </div>
-                <footer class="footer container" id="footer">
-                    <div class="row bgStyle01" style="padding-bottom: 10px;">
-                        <div class="col-sm-4">
-                            <h3 class="text-color">
-                                <span class="border-color">Company Information</span>
-                            </h3>
-                            <ul class="content body-color">
-                                <li>
-                                    <a href="#">Purpose, vision and values</a>
-                                </li>
-                                <li>
-                                    <a href="#">Career opportunities</a>
-                                </li>
-                                <li>
-                                    <a href="#">Standards of ethical business conduct</a>
-                                </li>
-                                <li>
-                                    <a href="#">Report an ethics or privacy incident</a>
-                                </li>
-                                <li>
-                                    <a href="http://antheminc.com">Antheminc.com</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-4">
-                            <h3 class="text-color">
-                                <span class="border-color">Site Information</span>
-                            </h3>
-                            <ul class="content body-color">
-                                <li>
-                                    <a href="#">Get help</a>
-                                </li>
-                                <li>
-                                    <a href="#">Share your feedback</a>
-                                </li>
-                                <li>
-                                    <a href="#">Make request to contribute content</a>
-                                </li>
-                                <li>
-                                    <a href="#">Report errors or omissions</a>
-                                </li>
-                                <li>
-                                    <a href="#">View the privacy statement</a>
-                                </li>
-                            </ul>
-                            <af:outputFormatted id="cpyrght"
-                                                rendered="#{WCAppContext.currentScope.default ? not empty boilerBean.copyrightMessage : not empty boilerBean.copyrightMessageInSpace}"
-                                                value="#{WCAppContext.currentScope.default ? boilerBean.copyrightMessage : boilerBean.copyrightMessageInSpace}"/>
-                        </div>
-                        <div class="col-sm-4">
-                            <h3 class="text-color">
-                                <span class="border-color">Search</span>
-                            </h3>
-                            <div id="footerSearchBox">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="bsSearchBox2"
-                                           placeholder="Search for people or content..."
-                                           onKeydown="Javascript: if(event.keyCode==13) doSearch()"/>
+                <!-- END: Content Region -->
+                
+                <!-- BEGIN: Site Footer  -->
+                <footer id="siteFooter">
+                    <div class="container">
+                        <div class="row mainFooter">
+                            <div class="col-sm-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Company Information</th>
+                                        </tr>
+                                    </thead>
                                      
-                                    <span class="input-group-btn">
-                                        <a class="btn btn-default" type="button" onclick="doSearch();"
-                                           ref="javascript:void(0)">
-                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></span>
-                                </div>
-                                <div class="input-group">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inlineRadioSearchOptionsFtr" id="inlineRadioFtrPeople"
-                                               value="option1"/>
-                                        People
-                                    </label>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Purpose, vision and values</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Career opportunities</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Standards of ethical business conduct</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Report an ethics or privacy incident</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="http://antheminc.com">Antheminc.com</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Report Concerns or Issues</th>
+                                        </tr>
+                                    </thead>
                                      
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inlineRadioSearchOptionsFtr"
-                                               id="inlineRadioFtrContent" value="option2" checked="checked"/>
-                                        Content
-                                    </label>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Ethics and compliance issues</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Fraud, waste and abuse</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Financial issues</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Information security concerns</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Site Information</th>
+                                        </tr>
+                                    </thead>
+                                     
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Share your feedback on Pulse</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#">Need help with Pulse?</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <a href="#" class="btn btn-lg">
+                                                    <i class="fa fa-file-pdf-o pad-right" aria-hidden="true"></i>Pulse Guide
+                                                                                                                 to
+                                                                                                                 Collaboration</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="subFooter">
+                        <div class="container">
+                            <div class="row subFooterInner">
+                                <div class="col-sm-12 col-md-12">
+                                    <af:outputFormatted id="cpyrght"
+                                                        rendered="#{WCAppContext.currentScope.default ? not empty boilerBean.copyrightMessage : not empty boilerBean.copyrightMessageInSpace}"
+                                                        value="#{WCAppContext.currentScope.default ? boilerBean.copyrightMessage : boilerBean.copyrightMessageInSpace}"/>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row footerBottom">
-                        <ul class="list-inline">
-                            <li>
-                                <span class="border-color">Get Social:</span>
-                            </li>
-                            <li>
-                                <a class="twitter" href="#">
-                                    <i class="fa fa-twitter"></i></a>
-                            </li>
-                            <li>
-                                <a class="facebook" href="#">
-                                    <i class="fa fa-facebook"></i></a>
-                            </li>
-                            <li>
-                                <a class="pinterest" href="#">
-                                    <i class="fa fa-pinterest"></i></a>
-                            </li>
-                            <li>
-                                <a class="linkedin" href="#">
-                                    <i class="fa fa-linkedin"></i></a>
-                            </li>
-                            <li>
-                                <a class="plus" href="#">
-                                    <i class="fa fa-google-plus"></i></a>
-                            </li>
-                        </ul>
-                    </div>
+                    
+                    <a href="#top" class="btn btn-icon scroll-to-top" title="Back to top"
+                           data-scroll="scroll-state">
+                            <i class="fa fa-long-arrow-up" aria-hidden="true"></i>
+                    </a>
                 </footer>
-                 
+                <!-- END: Site Footer  -->
             </div>
+            
+            
             <script language="javascript" src="/webcenter/uilibs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
-            <script language="javascript" src="/webcenter/uilibs/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"/>
-            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/custom.js" type="text/javascript"/>
-            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/jquery.sticky.js" type="text/javascript"/>
-            <script language="javascript" src="http://s3.amazonaws.com/pulse-demo-owc12c/pulseUtils.js" type="text/javascript"/>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/3.2.0/js/bootstrap.min.js"
+                    type="text/javascript"></script>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/custom.js"
+                    type="text/javascript"></script>
+            <script language="javascript" src="/webcenter/uilibs/bootstrap/themes/mosaic/1.0/js/jquery.sticky.js"
+                    type="text/javascript"></script>
+            <script language="javascript" src="http://s3.amazonaws.com/pulse-demo-owc12c/pulseUtils.js"
+                    type="text/javascript"></script>
+            <script>
+                
+                $(window).scroll(function() {
+                    if ($(document).scrollTop() > 50) {
+                        $('#fixedHeader').addClass('shrink');
+                        $('#content').addClass('adjTopMargin');
+                    } else {
+                        $('#fixedHeader').removeClass('shrink');
+                        $('#content').removeClass('adjTopMargin');
+                    }
+                });
+                
+                // ** Search Event Trigger **
+                $('#searchBtn').on('click', function(e) {
+                    var searchStr = $("input[type=text][id=searchInputText]").val();
+                    if(searchStr.length &gt; 1) {
+                        alert("Searching for " + searchStr);
+                    }
+                });                
+                
+                /* The following event triggers go and get data for the currently logged in user. 
+                 * They do so upon button invocation in ajax-type fashion, rather than getting this 
+                 * data upon page load. Currently, each "done" function simply inserts a placeholder 
+                 * string into the appropriate DOM element. However, they need to be modified to interate
+                 * through a pre-defined JSON payload then convert it into its proper HTML. That HTML is
+                 * to be inserted into the DOM element instead of the placeholder text.
+                 */
+                var wsBase = 'https://s3.amazonaws.com/pulse-demo-owc12c/';
+                                
+                // ** Notification Event Trigger **
+                $('#notificationIndicatorBtn').on('click', function(e) {
+                    var getNotificationData = $.ajax({
+                        url: wsBase + 'notifications.js',
+                        type: "GET",
+                        cache: false,
+                        dataType: "json"
+                    });
+                    getNotificationData.fail(function(xhr, txtStatus, errorThrown){
+                        $('#notification-content').html('error getting JSON: HTTP status=' + xhr.status + ' - ' + textStatus );
+                    });
+                    getNotificationData.done(function(data, txtStatus, xhr){
+                        $('#notification-content').html(data.description);
+                    });
+                });
+                
+                // ** Events Calandar Event Trigger **
+                $('#dashboard-events-btn').on('click', function(e) {
+                    var getEventsData = $.ajax({
+                        url: wsBase + 'events.js',
+                        type: "GET",
+                        cache: false,
+                        dataType: "json"
+                    });
+                    getEventsData.fail(function(xhr, txtStatus, errorThrown){
+                        $('#events-content').html('error getting JSON: HTTP status=' + xhr.status + ' - ' + textStatus );
+                    });
+                    getEventsData.done(function(data, txtStatus, xhr){
+                        $('#events-content').html(data.description);
+                    });
+                });
+                
+                // ** Favorites Event Trigger **
+                $('#dashboard-favorites-btn').on('click', function(e) {
+                    var getFavoritesData = $.ajax({
+                        url: wsBase + 'favorites.js',
+                        type: "GET",
+                        cache: false,
+                        dataType: "json"
+                    });
+                    getFavoritesData.fail(function(xhr, txtStatus, errorThrown){
+                        $('#favorites-content').html('error getting JSON: HTTP status=' + xhr.status + ' - ' + textStatus );
+                    });
+                    getFavoritesData.done(function(data, txtStatus, xhr){
+                        $('#favorites-content').html(data.description);
+                    });
+                });
+                
+                // ** MyApps Event Trigger **//
+                $('#dashboard-apps-btn').on('click', function(e) {
+                    var getMyAppsData = $.ajax({
+                        url: wsBase + 'apps.js',
+                        type: "GET",
+                        cache: false,
+                        dataType: "json"
+                    });
+                    getMyAppsData.fail(function(xhr, txtStatus, errorThrown){
+                        $('#apps-content').html('error getting JSON: HTTP status=' + xhr.status + ' - ' + textStatus );
+                    });
+                    getMyAppsData.done(function(data, txtStatus, xhr){
+                        $('#apps-content').html(data.description);
+                    });
+                });
+
+            </script>
             <af:panelGroupLayout id="pt_post" inlineStyle="display:none;" layout="vertical">
-                <wcdc:siteTemplateMetadata type="end" id="pt_stm2"/>
+                <wcdc:siteTemplateMetadata id="pt_stm2" type="end"/>
             </af:panelGroupLayout>
         </af:panelGroupLayout>
     </af:pageTemplateDef>
